@@ -338,7 +338,7 @@ def parse_axiom(alist, type_dict, predicate_dict):
 
 
 def parse_task(domain_pddl, task_pddl):
-    domain_name, domain_requirements, types, type_dict, constants, predicates, predicate_dict, functions, actions, axioms \
+    domain_name, domain_requirements, types, type_dict, constants, predicates, predicate_dict, functions, actions, axioms, indices_actions_no_effects, names_actions_no_effects \
                  = parse_domain_pddl(domain_pddl)
     task_name, task_domain_name, task_requirements, objects, init, goal, constraints, use_metric = parse_task_pddl(task_pddl, type_dict, predicate_dict)
 
@@ -355,12 +355,13 @@ def parse_task(domain_pddl, task_pddl):
 
     return pddl.Task(
         '', task_name, requirements, types, objects,
-        predicates, functions, init, goal, actions, axioms, use_metric, constraints)
+        predicates, functions, init, goal, actions, axioms, use_metric, constraints, indices_actions_no_effects, names_actions_no_effects)
 
 
 def parse_domain_pddl(domain_pddl):
     iterator = iter(domain_pddl)
-
+    indices_actions_no_effects = []
+    names_actions_no_effects = []
     define_tag = next(iterator)
     assert define_tag == "define"
     domain_line = next(iterator)
@@ -426,6 +427,7 @@ def parse_domain_pddl(domain_pddl):
 
     the_axioms = []
     the_actions = []
+    index_action = 0
     for entry in entries:
         if entry[0] == ":derived":
             axiom = parse_axiom(entry, type_dict, predicate_dict)
@@ -434,8 +436,14 @@ def parse_domain_pddl(domain_pddl):
             action = parse_action(entry, type_dict, predicate_dict)
             if action is not None:
                 the_actions.append(action)
+            else:
+                indices_actions_no_effects.append(index_action)
+                names_actions_no_effects.append(entry[1])
+            index_action += 1
     yield the_actions
     yield the_axioms
+    yield indices_actions_no_effects
+    yield names_actions_no_effects
 
 def parse_task_pddl(task_pddl, type_dict, predicate_dict):
     iterator = iter(task_pddl)
