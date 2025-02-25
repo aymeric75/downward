@@ -6,7 +6,7 @@ from . import conditions
 class Task:
     def __init__(self, domain_name, task_name, requirements,
                  types, objects, predicates, functions, init, goal,
-                 actions, axioms, use_metric, hard_constraints=None):
+                 actions, axioms, use_metric, hard_constraints=None, indices_actions_no_effects=None, names_actions_no_effects=None):
         self.domain_name = domain_name
         self.task_name = task_name
         self.requirements = requirements
@@ -22,6 +22,8 @@ class Task:
         self.use_min_cost_metric = use_metric
         self.hard_constraints = hard_constraints
         self.hard_constraints_map = {}
+        self.indices_actions_no_effects = indices_actions_no_effects
+        self.names_actions_no_effects = names_actions_no_effects
 
     def add_axiom(self, parameters, condition):
         name = "new-axiom@%d" % self.axiom_counter
